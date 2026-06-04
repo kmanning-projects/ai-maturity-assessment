@@ -1,0 +1,13 @@
+Dimension,Question (score 1-5 per the rubric),Score,Weight,Notes / evidence
+Data & Infrastructure,"Reliability, quality, accessibility of data + AI infra",,1,
+Talent & Skills,"Dedicated skills, roles, and org-wide AI literacy",,1,
+Governance & Risk,"Policy, risk-tiering, model docs, monitoring",,1,
+Adoption & Process,"AI embedded in core processes with measured value",,1,
+Strategy & Funding,"Managed, funded AI portfolio tied to strategy",,1,
+# --- How to use ---
+# 1. Score each dimension 1-5 using descriptors in docs/maturity-model.md
+# 2. Overall = weighted average (default weights = 1; adjust to your priorities)
+# 3. The SHAPE matters more than the average: find the lowest high-leverage dimension
+# 4. Next investment = read the rubric one level up for that dimension
+# Overall (avg),,=AVERAGE of scores,,
+# Binding constraint,,lowest high-leverage dimension,,
