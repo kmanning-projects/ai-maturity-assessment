@@ -42,7 +42,7 @@ Each dimension is scored **Level 1–5**:
 - **v2 (stretch):** a static web app (built locally, hosted on GitHub Pages) that produces a radar chart + recommendations. Built with Claude Code; no backend, no cost.
 
 ## Status
-🟢 v1 complete — full [5×5 rubric](docs/maturity-model.md), a [self-assessment tool](tool/) (scored CSV + guide), and a worked [sample diagnostic](docs/sample-report.md) ("Northwind Financial") are in place. Web-app version is the remaining stretch goal.
+🟢 v1 + v2 complete — full [5×5 rubric](docs/maturity-model.md), a worked [sample diagnostic](docs/sample-report.md) ("Northwind Financial"), the scored [spreadsheet tool](tool/), **and an interactive web app** ([`index.html`](index.html): slider scoring → radar chart → binding-constraint diagnosis). Open `index.html` locally, or publish free via GitHub Pages once public ([how](tool/README.md)).
 
 ---
 > **Strategic takeaway:** "Are we behind?" is the wrong question. "Which dimension is our binding constraint, and what's the next level look like?" is the one that funds the right work. Most orgs over-invest in models while stuck at Level 2 on governance and adoption.

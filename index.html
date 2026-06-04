@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Maturity Assessment</title>
+<meta name="description" content="Score your organization across five AI maturity dimensions and find your binding constraint." />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{--bg:#0f1320;--panel:#171c2e;--ink:#e8ecf6;--mut:#9aa6c4;--acc:#5b8cff;--warn:#ffb347;--good:#3ad29f}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:960px;margin:0 auto;padding:32px 20px 80px}
+  h1{font-size:1.9rem;margin:.2em 0 .1em}
+  .sub{color:var(--mut);margin:0 0 24px}
+  .panel{background:var(--panel);border:1px solid #232a42;border-radius:14px;padding:20px 22px;margin:16px 0}
+  .dim{margin:18px 0;padding-bottom:14px;border-bottom:1px solid #232a42}
+  .dim:last-child{border-bottom:0}
+  .dim h3{margin:0 0 6px;font-size:1.05rem}
+  .desc{color:var(--mut);font-size:.9rem;min-height:2.6em}
+  .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  input[type=range]{flex:1;min-width:220px;accent-color:var(--acc)}
+  .lvl{font-weight:700;color:var(--acc);width:64px;text-align:center;font-size:1.05rem}
+  button{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-size:1rem;font-weight:600;cursor:pointer}
+  button:hover{filter:brightness(1.08)}
+  .results{display:none}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .big{font-size:2.2rem;font-weight:800;margin:0}
+  .tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.8rem;font-weight:700}
+  .tag.warn{background:rgba(255,179,71,.16);color:#ffb347}
+  .tag.good{background:rgba(58,210,159,.16);color:#3ad29f}
+  .rec{background:rgba(91,140,255,.1);border-left:3px solid var(--acc);padding:14px 16px;border-radius:8px;margin-top:14px}
+  .rec h4{margin:0 0 6px}
+  a{color:var(--acc)}
+  ul{margin:.4em 0 .4em 1.1em;padding:0}
+  .foot{color:var(--mut);font-size:.85rem;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AI Maturity Assessment</h1>
+  <p class="sub">Score your organization 1–5 on each dimension. The <strong>shape</strong> matters more than the average — this tool finds your <em>binding constraint</em> and your concrete next move.</p>
+
+  <div class="panel" id="form"></div>
+  <div style="text-align:center"><button id="go">See diagnosis →</button></div>
+
+  <div class="panel results" id="results">
+    <div class="grid">
+      <div>
+        <p class="sub" style="margin:0">Overall (weighted average)</p>
+        <p class="big" id="avg">—</p>
+        <div id="profile"></div>
+      </div>
+      <div><canvas id="radar" height="260"></canvas></div>
+    </div>
+    <div class="rec" id="rec"></div>
+  </div>
+
+  <p class="foot">Rubric &amp; method: <a href="docs/maturity-model.md">maturity-model.md</a> · Worked example: <a href="docs/sample-report.md">sample-report.md</a> · Part of the <a href="https://github.com/kpandkm-projects/ai-maturity-assessment">AI Maturity Assessment</a> portfolio.</p>
+</div>
+
+<script>
+// Rubric: descriptors per level, plus a leverage weight used to break ties when
+// finding the binding constraint (lowest high-leverage dimension).
+const DIMS = [
+  {key:"Data & Infrastructure", lev:1.0, d:["Data siloed, quality unknown; no AI infra","Some accessible data; ad hoc tooling","Governed data for key domains; repeatable pipelines","Self-serve data + reuse; scalable serving","Real-time, high-quality data as a product; elastic infra"]},
+  {key:"Talent & Skills", lev:1.0, d:["No dedicated skills; reliance on individuals","A few practitioners; key-person risk","Core team + defined roles; some literacy programs","Capability embedded in BUs; broad literacy","AI fluency is cultural; attracts top talent"]},
+  {key:"Governance & Risk", lev:1.2, d:["No policy, no oversight; shadow AI","Ad hoc reviews; informal rules","Risk-tiered intake; policy; model docs","Monitored in production; auditable; standards-aligned","Governance as enabler; proactive, automated"]},
+  {key:"Adoption & Process", lev:1.2, d:["Demos, no production use","Isolated production use; low trust","Embedded in several core processes; measured value","AI is default in many workflows; change managed","AI-native processes; continuous improvement"]},
+  {key:"Strategy & Funding", lev:1.1, d:["No strategy; sporadic spend","Stated ambition; project-by-project funding","Portfolio + themes + staged funding","Actively managed portfolio; kills underperformers","AI integral to corporate strategy; durable investment"]}
+];
+
+const form = document.getElementById("form");
+DIMS.forEach((dim,i)=>{
+  const el = document.createElement("div");
+  el.className="dim";
+  el.innerHTML = `<h3>${i+1}. ${dim.key}</h3>
+    <div class="row"><input type="range" min="1" max="5" value="2" id="r${i}"><span class="lvl" id="l${i}">L2</span></div>
+    <div class="desc" id="d${i}">${dim.d[1]}</div>`;
+  form.appendChild(el);
+  const r=el.querySelector(`#r${i}`), l=el.querySelector(`#l${i}`), d=el.querySelector(`#d${i}`);
+  r.addEventListener("input",()=>{l.textContent="L"+r.value; d.textContent=dim.d[r.value-1];});
+});
+
+let chart;
+document.getElementById("go").addEventListener("click",()=>{
+  const scores = DIMS.map((_,i)=>+document.getElementById("r"+i).value);
+  const avg = (scores.reduce((a,b)=>a+b,0)/scores.length);
+
+  // binding constraint = lowest score; ties broken by highest leverage weight
+  const min = Math.min(...scores);
+  let bc = -1, bestLev = -1;
+  scores.forEach((s,i)=>{ if(s===min && DIMS[i].lev>bestLev){bestLev=DIMS[i].lev; bc=i;} });
+  const ahead = scores.map((s,i)=>({i,s})).filter(o=>o.s>min).map(o=>DIMS[o.i].key);
+
+  document.getElementById("avg").textContent = avg.toFixed(1) + " / 5";
+  document.getElementById("profile").innerHTML = DIMS.map((dim,i)=>{
+    const bar="█".repeat(scores[i])+"░".repeat(5-scores[i]);
+    const mark = i===bc ? ' <span class="tag warn">binding constraint</span>' : '';
+    return `<div style="font-family:ui-monospace,monospace;font-size:.9rem">${bar} <strong>${scores[i]}</strong> ${dim.key}${mark}</div>`;
+  }).join("");
+
+  const next = Math.min(min+1,5);
+  const rec = document.getElementById("rec");
+  rec.innerHTML = `<h4>Your next move</h4>
+    <p>Your binding constraint is <strong>${DIMS[bc].key}</strong> (Level ${min})${DIMS[bc].lev>1?` — high-leverage, so prioritize it`:''}. Raise it to <strong>Level ${next}</strong>:</p>
+    <ul><li><em>Level ${next} looks like:</em> ${DIMS[bc].d[next-1]}</li></ul>
+    ${ahead.length?`<p style="color:var(--mut)">Already ahead of the constraint — <strong>stop over-investing</strong> here until the constraint catches up: ${ahead.join(", ")}.</p>`:''}
+    <p style="color:var(--mut);font-size:.9rem">The average (${avg.toFixed(1)}) is a headline only. The profile shape is the insight.</p>`;
+
+  document.getElementById("results").style.display="block";
+  const data = {labels:DIMS.map(d=>d.key.split(" ")[0]), datasets:[{label:"Maturity",data:scores,fill:true,backgroundColor:"rgba(91,140,255,.18)",borderColor:"#5b8cff",pointBackgroundColor:"#5b8cff"}]};
+  const opts = {scales:{r:{min:0,max:5,ticks:{stepSize:1,color:"#9aa6c4",backdropColor:"transparent"},grid:{color:"#2a3252"},angleLines:{color:"#2a3252"},pointLabels:{color:"#e8ecf6",font:{size:12}}}},plugins:{legend:{display:false}}};
+  if(chart) chart.destroy();
+  chart = new Chart(document.getElementById("radar"),{type:"radar",data,options:opts});
+  document.getElementById("results").scrollIntoView({behavior:"smooth"});
+});
+</script>
+</body>
+</html>
