@@ -15,9 +15,9 @@ A no-backend static page ([`../index.html`](../index.html)) where you score the 
 - **Run locally now:** open `index.html` in any browser.
 - **Publish free via GitHub Pages** (once the repo is public): Settings → Pages → Source: `main` / root, or:
   ```bash
-  gh api -X POST repos/kpandkm-projects/ai-maturity-assessment/pages -f 'source[branch]=main' -f 'source[path]=/'
+  gh api -X POST repos/kmanning-projects/ai-maturity-assessment/pages -f 'source[branch]=main' -f 'source[path]=/'
   ```
-  Then it's live at `https://kpandkm-projects.github.io/ai-maturity-assessment/`. (GitHub Pages on a private repo requires a paid plan; make the repo public first.)
+  Then it's live at `https://kmanning-projects.github.io/ai-maturity-assessment/`. (GitHub Pages on a private repo requires a paid plan; make the repo public first.)
 
 ## Interpreting results
 - **Average score** = a headline only. Don't lead with it.

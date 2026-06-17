@@ -70,6 +70,6 @@ Most organizations are over-invested in models and infrastructure while stuck at
 
 ---
 
-*The rubric, the worked example, and the interactive assessment tool are open-source here: [github.com/kpandkm-projects/ai-maturity-assessment](https://github.com/kpandkm-projects/ai-maturity-assessment).*
+*The rubric, the worked example, and the interactive assessment tool are open-source here: [github.com/kmanning-projects/ai-maturity-assessment](https://github.com/kmanning-projects/ai-maturity-assessment).*
 
 *I'm a strategist who builds. If you're diagnosing where your organization actually stands on AI — and what to do about it — let's connect.*

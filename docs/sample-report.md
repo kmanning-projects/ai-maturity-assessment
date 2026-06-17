@@ -32,7 +32,7 @@ The **binding constraint is Governance (2)**, made high-leverage by their regula
 
 ## Recommended next move
 **Raise Governance from 2 → 3 first**, and pair it with an Adoption push:
-1. Stand up a **risk-tiered intake + AI policy + model documentation** (see the [Governance Playbook](https://github.com/kpandkm-projects/responsible-ai-governance)). This unblocks production, not just compliance.
+1. Stand up a **risk-tiered intake + AI policy + model documentation** (see the [Governance Playbook](https://github.com/kmanning-projects/responsible-ai-governance)). This unblocks production, not just compliance.
 2. Pick **2–3 stalled pilots** and shepherd them through the new governance to production with measured value — moving Adoption 2 → 3.
 3. **Do not** fund the platform expansion this cycle; Data/Infra is already ahead of the constraint. Revisit once Governance and Adoption catch up.
 
