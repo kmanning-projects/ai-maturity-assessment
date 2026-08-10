@@ -1,0 +1,423 @@
+<title>Sample Diagnostic — Northwind Financial</title>
+<style>
+/* ── tokens ───────────────────────────────────────── */
+:root {
+  --bg:      #0f1320;
+  --panel:   #171c2e;
+  --panel2:  #1d2438;
+  --border:  #232a42;
+  --ink:     #e8ecf6;
+  --mut:     #9aa6c4;
+  --faint:   #5a6580;
+  --acc:     #5b8cff;
+
+  --l1: #e84c4c;
+  --l2: #ff9f40;
+  --l3: #5b8cff;
+  --l4: #3ad29f;
+  --l5: #c084fc;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  padding: 52px 24px 80px;
+}
+
+/* ── layout ───────────────────────────────────────── */
+.page { max-width: 720px; margin: 0 auto; }
+
+/* ── header ───────────────────────────────────────── */
+.tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 10px;
+}
+h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.sub {
+  font-size: 0.95rem;
+  color: var(--mut);
+  max-width: 58ch;
+  margin-bottom: 32px;
+}
+
+/* ── org card ─────────────────────────────────────── */
+.org-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+.org-field { display: flex; flex-direction: column; gap: 2px; }
+.org-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+.org-value { font-size: 0.9rem; color: var(--ink); }
+
+/* ── section headers ──────────────────────────────── */
+h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 16px;
+  margin-top: 40px;
+}
+h2:first-of-type { margin-top: 0; }
+
+/* ── score rows ───────────────────────────────────── */
+.scores { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
+.score-row {
+  display: grid;
+  grid-template-columns: 170px 36px 1fr 44px;
+  align-items: center;
+  gap: 14px;
+}
+.dim-label {
+  font-size: 0.875rem;
+  color: var(--mut);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.dim-label .indicator {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.constraint-flag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--l1);
+  text-transform: uppercase;
+  white-space: nowrap;
+  margin-left: 2px;
+  display: none;
+}
+.score-row.is-constraint .dim-label { color: var(--ink); }
+.score-row.is-constraint .constraint-flag { display: inline; }
+
+.lbadge {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; font-weight: 800;
+}
+.lbadge.l1 { background: rgba(232,76,76,0.15);  color: var(--l1); }
+.lbadge.l2 { background: rgba(255,159,64,0.15); color: var(--l2); }
+.lbadge.l3 { background: rgba(91,140,255,0.15); color: var(--l3); }
+.lbadge.l4 { background: rgba(58,210,159,0.15); color: var(--l4); }
+.lbadge.l5 { background: rgba(192,132,252,0.15);color: var(--l5); }
+
+.bar-track {
+  height: 6px;
+  background: var(--panel2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.score-row.is-constraint .bar-fill { background: var(--l2); }
+.score-row:not(.is-constraint) .bar-fill { background: var(--acc); }
+.score-row[data-score="4"] .bar-fill { background: var(--l4); }
+
+.rationale { font-size: 0.8rem; color: var(--faint); font-style: italic; margin-top: 2px; }
+
+/* ── average note ─────────────────────────────────── */
+.avg-note {
+  font-size: 0.85rem;
+  color: var(--mut);
+  padding: 10px 0 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 36px;
+}
+.avg-note strong { color: var(--ink); }
+.avg-note .strike {
+  text-decoration: line-through;
+  color: var(--faint);
+}
+
+/* ── insight panels ───────────────────────────────── */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--mut);
+}
+.panel strong { color: var(--ink); }
+.panel.warn-left { border-left: 3px solid var(--l1); }
+.panel.good-left { border-left: 3px solid var(--l4); }
+
+/* ── recommendation steps ─────────────────────────── */
+.steps { display: flex; flex-direction: column; gap: 12px; }
+.step { display: flex; gap: 14px; align-items: flex-start; }
+.step-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--panel2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 700; color: var(--acc);
+  flex-shrink: 0; margin-top: 2px;
+}
+.step-body { font-size: 0.88rem; color: var(--mut); line-height: 1.55; }
+.step-body strong { color: var(--ink); }
+.step-body a { color: var(--acc); text-decoration: none; }
+
+/* ── do-not panel ─────────────────────────────────── */
+.dont-panel {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(232,76,76,0.06);
+  border: 1px solid rgba(232,76,76,0.2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.86rem;
+  color: var(--mut);
+  margin-top: 12px;
+}
+.dont-icon { color: var(--l1); font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+.dont-panel strong { color: var(--l1); }
+
+/* ── lesson callout ───────────────────────────────── */
+.lesson {
+  margin-top: 44px;
+  border-top: 1px solid var(--border);
+  padding-top: 28px;
+  font-size: 0.92rem;
+  color: var(--mut);
+  font-style: italic;
+  line-height: 1.65;
+}
+.lesson strong { color: var(--ink); font-style: normal; }
+.lesson cite { display: block; font-style: normal; font-size: 0.78rem; color: var(--faint); margin-top: 10px; }
+
+/* ── footer ───────────────────────────────────────── */
+.page-footer {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--faint);
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.page-footer a { color: var(--mut); text-decoration: none; }
+.page-footer a:hover { color: var(--acc); }
+
+/* ── expected effect box ──────────────────────────── */
+.effect-box {
+  margin-top: 20px;
+  background: rgba(58,210,159,0.07);
+  border: 1px solid rgba(58,210,159,0.2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.86rem;
+  color: var(--mut);
+}
+.effect-box strong { color: var(--l4); }
+
+/* ── responsive ───────────────────────────────────── */
+@media (max-width: 600px) {
+  .score-row { grid-template-columns: 1fr 36px; grid-template-rows: auto auto; }
+  .bar-track { display: none; }
+  .rationale { grid-column: 1 / -1; }
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f4f6fb; --panel: #ffffff; --panel2: #eef1f8;
+    --border: #d8dde8; --ink: #1a2035; --mut: #5a6580; --faint: #a0aac0;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f6fb; --panel: #ffffff; --panel2: #eef1f8;
+  --border: #d8dde8; --ink: #1a2035; --mut: #5a6580; --faint: #a0aac0;
+}
+:root[data-theme="dark"] {
+  --bg: #0f1320; --panel: #171c2e; --panel2: #1d2438;
+  --border: #232a42; --ink: #e8ecf6; --mut: #9aa6c4; --faint: #5a6580;
+}
+</style>
+
+<div class="page">
+
+  <!-- header -->
+  <div class="tag">Worked example · AI Maturity Assessment</div>
+  <h1>Northwind Financial</h1>
+  <p class="sub">A diagnostic report showing how the five-dimension model turns individual scores into a single, fundable next move — and why the average is the worst number to lead with.</p>
+
+  <!-- org card -->
+  <div class="org-card">
+    <div class="org-field">
+      <span class="org-label">Organization</span>
+      <span class="org-value">Northwind Financial <em style="color:var(--faint);font-size:0.8rem">(fictional)</em></span>
+    </div>
+    <div class="org-field">
+      <span class="org-label">Size</span>
+      <span class="org-value">~5,000 employees</span>
+    </div>
+    <div class="org-field">
+      <span class="org-label">Sector</span>
+      <span class="org-value">Regional bank — regulated</span>
+    </div>
+    <div class="org-field">
+      <span class="org-label">Presenting concern</span>
+      <span class="org-value">"Are we behind on AI?"</span>
+    </div>
+  </div>
+
+  <!-- scores -->
+  <h2>Dimension scores</h2>
+  <div class="scores">
+
+    <div>
+      <div class="score-row" data-score="4">
+        <div class="dim-label">
+          <span class="indicator" style="background:var(--l4)"></span>
+          Data &amp; Infrastructure
+        </div>
+        <div class="lbadge l4">4</div>
+        <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
+        <div style="font-size:0.78rem;color:var(--faint);font-variant-numeric:tabular-nums">L4 / 5</div>
+      </div>
+      <div class="rationale">Strong data warehouse, governed pipelines, cloud platform in place</div>
+    </div>
+
+    <div>
+      <div class="score-row" data-score="3">
+        <div class="dim-label">
+          <span class="indicator" style="background:var(--l3)"></span>
+          Talent &amp; Skills
+        </div>
+        <div class="lbadge l3">3</div>
+        <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+        <div style="font-size:0.78rem;color:var(--faint);font-variant-numeric:tabular-nums">L3 / 5</div>
+      </div>
+      <div class="rationale">A capable central data-science team; literacy thin outside it</div>
+    </div>
+
+    <div>
+      <div class="score-row is-constraint" data-score="2">
+        <div class="dim-label">
+          <span class="indicator" style="background:var(--l1)"></span>
+          Governance &amp; Risk
+          <span class="constraint-flag">◀ binding constraint</span>
+        </div>
+        <div class="lbadge l2">2</div>
+        <div class="bar-track"><div class="bar-fill" style="width:40%"></div></div>
+        <div style="font-size:0.78rem;color:var(--faint);font-variant-numeric:tabular-nums">L2 / 5</div>
+      </div>
+      <div class="rationale">Ad hoc reviews; no risk-tiering; shadow GenAI use in branches</div>
+    </div>
+
+    <div>
+      <div class="score-row is-constraint" data-score="2">
+        <div class="dim-label">
+          <span class="indicator" style="background:var(--l2)"></span>
+          Adoption &amp; Process
+          <span class="constraint-flag">◀ second constraint</span>
+        </div>
+        <div class="lbadge l2">2</div>
+        <div class="bar-track"><div class="bar-fill" style="width:40%"></div></div>
+        <div style="font-size:0.78rem;color:var(--faint);font-variant-numeric:tabular-nums">L2 / 5</div>
+      </div>
+      <div class="rationale">Several pilots, almost nothing in production; low trust</div>
+    </div>
+
+    <div>
+      <div class="score-row" data-score="3">
+        <div class="dim-label">
+          <span class="indicator" style="background:var(--l3)"></span>
+          Strategy &amp; Funding
+        </div>
+        <div class="lbadge l3">3</div>
+        <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+        <div style="font-size:0.78rem;color:var(--faint);font-variant-numeric:tabular-nums">L3 / 5</div>
+      </div>
+      <div class="rationale">Stated ambition + some portfolio thinking; funding still project-by-project</div>
+    </div>
+
+  </div>
+
+  <div class="avg-note">
+    Overall average: <span class="strike">2.8</span> — but the average is the <strong>least useful number here.</strong>
+    The shape, not the mean, reveals the constraint.
+  </div>
+
+  <!-- diagnosis -->
+  <h2>Diagnosis</h2>
+
+  <div class="panel warn-left">
+    Northwind's instinct — buy a bigger model platform — would pour money into <strong>Data &amp; Infrastructure, already their strongest dimension (Level 4).</strong> That's the classic mistake the average hides: a mediocre-looking 2.8 signals "improve everything," when the actual problem is two specific dimensions.
+  </div>
+
+  <div class="panel" style="margin-top:0">
+    The <strong>binding constraint is Governance (Level 2)</strong>, made high-leverage by their regulated context. In a bank, until there's risk-tiered intake and oversight, nothing can safely reach production — which is exactly why <strong>Adoption is also stuck at Level 2.</strong> Strong data feeding ungoverned pilots that never ship is the whole problem, in one sentence.
+  </div>
+
+  <!-- recommended next move -->
+  <h2 style="margin-top:36px">Recommended next move</h2>
+  <p style="font-size:0.88rem;color:var(--mut);margin-bottom:18px">Raise Governance 2 → 3 first, and pair it with an Adoption push:</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">Stand up <strong>risk-tiered intake + AI policy + model documentation</strong> — the building blocks of NIST AI RMF's Govern function. See the <a href="https://github.com/kmanning-projects/responsible-ai-governance">Governance Playbook</a> for the intake form, risk-tiering workflow, and AI registry schema. This unblocks production, not just compliance.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">Pick <strong>2–3 stalled pilots</strong> and shepherd them through the new governance to production with a measured success metric — moving Adoption 2 → 3. Existing assets, existing funding. No new build required.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body"><strong>Do not fund the platform expansion this cycle.</strong> Data &amp; Infrastructure is already ahead of the constraint. Revisit once Governance and Adoption catch up to Level 3.</div>
+    </div>
+  </div>
+
+  <div class="dont-panel">
+    <div class="dont-icon">✕</div>
+    <div><strong>What not to do:</strong> Fund a model-platform buildout. It compounds an already-strong dimension while leaving the binding constraint untouched — and does nothing to move pilots out of purgatory. Same budget; very different outcome.</div>
+  </div>
+
+  <div class="effect-box">
+    <strong>Expected effect:</strong> Unblocking the binding constraint converts existing, already-funded data strength into shipped value. Moving Governance 2 → 3 is a focused quarter of work: a risk-tiered intake process, a written AI policy, and model documentation for in-flight systems. That's a smaller investment than the infrastructure expansion it replaces — and the investment that actually unlocks production.
+  </div>
+
+  <!-- lesson -->
+  <div class="lesson">
+    "Are we behind on AI?" produces a platform purchase.
+    "Which dimension is our binding constraint, and what does the next level cost?" produces a governance program that unlocks everything already built.
+    <strong>Same budget. Very different outcome.</strong>
+    <cite>— This is what a maturity model is for: not benchmarking against competitors, but finding the one investment that unlocks everything else.</cite>
+  </div>
+
+  <!-- footer -->
+  <footer class="page-footer">
+    <a href="maturity-model.html">Full rubric →</a>
+    <a href="https://km-ai-maturity-assessment.netlify.app">Interactive tool</a>
+    <a href="https://github.com/kmanning-projects/ai-maturity-assessment">GitHub repo</a>
+    <span>Northwind Financial is a fictional organization constructed to illustrate the model's diagnostic logic.</span>
+  </footer>
+
+</div>
