@@ -2,7 +2,11 @@
 
 > **Strategic anchor B.** A scored maturity model across five dimensions, plus a self-assessment tool any organization can actually run to find out where it really is.
 
-[![Layer](https://img.shields.io/badge/layer-strategy-blue)]() [![Companion article](https://img.shields.io/badge/Medium-deep--dive-black)](#) [![Book](https://img.shields.io/badge/book-Ch.2-green)](#)
+[![Layer](https://img.shields.io/badge/layer-strategy-blue)]() [![Live tool](https://img.shields.io/badge/tool-live-brightgreen)](https://km-ai-maturity-assessment.netlify.app) [![Companion article](https://img.shields.io/badge/Medium-deep--dive-black)](#) [![Book](https://img.shields.io/badge/book-Ch.2-green)](#)
+
+## The tool
+
+**[km-ai-maturity-assessment.netlify.app](https://km-ai-maturity-assessment.netlify.app)** — no login, nothing leaves your browser. Score the five dimensions with sliders → get your radar profile, your binding constraint, and exactly what the next level looks like for it.
 
 ## The problem
 Leaders ask "are we behind on AI?" and get vibes, not a diagnosis. This model turns that question into a scored, defensible assessment with a clear next move.
@@ -33,18 +37,15 @@ Each dimension is scored **Level 1–5**:
 | Path | Contents |
 |------|----------|
 | `docs/maturity-model.md` | Full rubric: 5 dimensions × 5 levels with descriptors |
-| `tool/` | Self-assessment tool (spreadsheet **and** a small web app) |
-| `docs/sample-report.md` | An example diagnostic output + recommendations |
+| `docs/sample-report.md` | Example diagnostic output + recommendations ("Northwind Financial") |
+| `tool/` | Self-assessment spreadsheet |
+| `index.html` | Source for the interactive web tool |
 | `content/` | Medium draft + LinkedIn slices |
 
-## The tool
-- **v1:** a scored spreadsheet (`tool/assessment.xlsx`) — instant, zero-friction.
-- **v2 (stretch):** a static web app (built locally, hosted on GitHub Pages) that produces a radar chart + recommendations. Built with Claude Code; no backend, no cost.
-
 ## Status
-🟢 v1 + v2 complete — full [5×5 rubric](docs/maturity-model.md), a worked [sample diagnostic](docs/sample-report.md) ("Northwind Financial"), the scored [spreadsheet tool](tool/), **and an interactive web app** ([`index.html`](index.html): slider scoring → radar chart → binding-constraint diagnosis). Open `index.html` locally, or publish free via GitHub Pages once public ([how](tool/README.md)).
+🟢 Complete — full [5×5 rubric](docs/maturity-model.md), worked [sample diagnostic](docs/sample-report.md), and the [interactive web tool](https://km-ai-maturity-assessment.netlify.app) (slider scoring → radar chart → binding-constraint diagnosis). Deployed via Netlify; auto-updates on push to main.
 
 ---
-> **Strategic takeaway:** "Are we behind?" is the wrong question. "Which dimension is our binding constraint, and what's the next level look like?" is the one that funds the right work. Most orgs over-invest in models while stuck at Level 2 on governance and adoption.
+> **Strategic takeaway:** "Are we behind?" is the wrong question. "Which dimension is our binding constraint, and what does the next level cost?" is the one that funds the right work. Most orgs over-invest in models while stuck at Level 2 on governance and adoption.
 
-📎 Related: [Strategy Operating Model](../ai-strategy-operating-model) · [Operating Model Playbook](../ai-operating-model-playbook) · 📖 Book Ch. 2
+📎 Related: [AI Strategy Operating Model](https://github.com/kmanning-projects/ai-strategy-operating-model) · [Responsible AI Governance](https://github.com/kmanning-projects/responsible-ai-governance) · 📖 Book Ch. 2
