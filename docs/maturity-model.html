@@ -1,0 +1,642 @@
+<title>AI Maturity Model — Full Rubric</title>
+<style>
+/* ── tokens ───────────────────────────────────────── */
+:root {
+  --bg:      #0f1320;
+  --panel:   #171c2e;
+  --panel2:  #1d2438;
+  --border:  #232a42;
+  --ink:     #e8ecf6;
+  --mut:     #9aa6c4;
+  --faint:   #5a6580;
+  --acc:     #5b8cff;
+  --sb-w:    220px;
+
+  --l1: #e84c4c;
+  --l2: #ff9f40;
+  --l3: #5b8cff;
+  --l4: #3ad29f;
+  --l5: #c084fc;
+}
+
+/* ── reset ────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── sidebar ──────────────────────────────────────── */
+.sidebar {
+  width: var(--sb-w);
+  min-width: var(--sb-w);
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 28px 0 40px;
+  flex-shrink: 0;
+}
+.sb-logo {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  padding: 0 20px 18px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+.sb-group-label {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  padding: 10px 20px 4px;
+}
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 20px;
+  color: var(--mut);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.15s, background 0.15s;
+  border-left: 2px solid transparent;
+}
+.sb-link:hover { color: var(--ink); background: var(--panel2); }
+.sb-link.active { color: var(--acc); border-left-color: var(--acc); background: rgba(91,140,255,0.07); }
+.sb-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.sb-link[href="#scoring"] .sb-dot { background: var(--faint); }
+.sb-tool-link {
+  margin: 24px 16px 0;
+  display: block;
+  text-align: center;
+  background: rgba(91,140,255,0.12);
+  border: 1px solid rgba(91,140,255,0.3);
+  color: var(--acc);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.sb-tool-link:hover { background: rgba(91,140,255,0.2); }
+
+/* ── main ─────────────────────────────────────────── */
+main {
+  flex: 1;
+  min-width: 0;
+  padding: 48px 56px 80px;
+  max-width: 900px;
+}
+
+/* ── page header ──────────────────────────────────── */
+.page-header { margin-bottom: 40px; }
+.page-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.page-header .sub {
+  color: var(--mut);
+  font-size: 0.95rem;
+  max-width: 60ch;
+}
+.page-header .sub em { color: var(--ink); font-style: normal; font-weight: 600; }
+
+/* ── level legend strip ───────────────────────────── */
+.level-legend {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 48px;
+}
+.level-cell {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 12px;
+  text-align: center;
+}
+.level-cell .lnum {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.level-cell .lname {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.level-cell .lsig {
+  font-size: 0.75rem;
+  color: var(--mut);
+  line-height: 1.4;
+}
+.level-cell[data-l="1"] { border-top: 3px solid var(--l1); }
+.level-cell[data-l="2"] { border-top: 3px solid var(--l2); }
+.level-cell[data-l="3"] { border-top: 3px solid var(--l3); }
+.level-cell[data-l="4"] { border-top: 3px solid var(--l4); }
+.level-cell[data-l="5"] { border-top: 3px solid var(--l5); }
+.level-cell[data-l="1"] .lnum { color: var(--l1); }
+.level-cell[data-l="2"] .lnum { color: var(--l2); }
+.level-cell[data-l="3"] .lnum { color: var(--l3); }
+.level-cell[data-l="4"] .lnum { color: var(--l4); }
+.level-cell[data-l="5"] .lnum { color: var(--l5); }
+
+/* ── constraint callout ───────────────────────────── */
+.constraint-note {
+  border: 1px solid rgba(91,140,255,0.25);
+  border-left: 3px solid var(--acc);
+  background: rgba(91,140,255,0.07);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  color: var(--mut);
+  margin-bottom: 48px;
+  line-height: 1.55;
+}
+.constraint-note strong { color: var(--ink); }
+
+/* ── dimension sections ───────────────────────────── */
+.dimension {
+  margin-bottom: 52px;
+  scroll-margin-top: 32px;
+}
+.dim-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.dim-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+.dim-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.dim-question {
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--mut);
+  margin-bottom: 16px;
+  padding-left: 2px;
+}
+
+/* ── rubric table ─────────────────────────────────── */
+.rubric {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+.rubric th {
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  padding: 0 14px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.rubric th:first-child { padding-left: 0; width: 52px; }
+.rubric td {
+  padding: 13px 14px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+.rubric td:first-child { padding-left: 0; }
+.rubric tr:last-child td { border-bottom: none; }
+.rubric tr:hover td { background: rgba(255,255,255,0.025); }
+
+/* level badge */
+.lbadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  font-size: 0.82rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.lbadge.l1 { background: rgba(232,76,76,0.15);  color: var(--l1); }
+.lbadge.l2 { background: rgba(255,159,64,0.15); color: var(--l2); }
+.lbadge.l3 { background: rgba(91,140,255,0.15); color: var(--l3); }
+.lbadge.l4 { background: rgba(58,210,159,0.15); color: var(--l4); }
+.lbadge.l5 { background: rgba(192,132,252,0.15);color: var(--l5); }
+
+.descriptor { color: var(--ink); line-height: 1.4; }
+.signals { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 5px; }
+.chip {
+  font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
+  font-size: 0.73rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: var(--mut);
+  white-space: nowrap;
+}
+
+/* ── scoring section ──────────────────────────────── */
+#scoring {
+  scroll-margin-top: 32px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+#scoring h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--ink);
+}
+.steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px; }
+.step { display: flex; gap: 16px; align-items: flex-start; }
+.step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--panel2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700; color: var(--acc);
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-body { font-size: 0.88rem; color: var(--mut); line-height: 1.55; }
+.step-body strong { color: var(--ink); }
+
+.rec-rule {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--l5);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  color: var(--mut);
+  line-height: 1.6;
+}
+.rec-rule strong { color: var(--ink); }
+
+/* ── footer ───────────────────────────────────────── */
+.page-footer {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--faint);
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.page-footer a { color: var(--mut); text-decoration: none; }
+.page-footer a:hover { color: var(--acc); }
+
+/* ── responsive ───────────────────────────────────── */
+@media (max-width: 760px) {
+  .sidebar { display: none; }
+  main { padding: 28px 20px 60px; }
+  .level-legend { grid-template-columns: repeat(3, 1fr); }
+  .level-legend .level-cell:nth-child(4),
+  .level-legend .level-cell:nth-child(5) { grid-column: span 1; }
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f4f6fb;
+    --panel: #ffffff;
+    --panel2: #eef1f8;
+    --border: #d8dde8;
+    --ink: #1a2035;
+    --mut: #5a6580;
+    --faint: #a0aac0;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f6fb; --panel: #ffffff; --panel2: #eef1f8;
+  --border: #d8dde8; --ink: #1a2035; --mut: #5a6580; --faint: #a0aac0;
+}
+:root[data-theme="dark"] {
+  --bg: #0f1320; --panel: #171c2e; --panel2: #1d2438;
+  --border: #232a42; --ink: #e8ecf6; --mut: #9aa6c4; --faint: #5a6580;
+}
+</style>
+
+<nav class="sidebar">
+  <div class="sb-logo">AI Maturity Model</div>
+  <div class="sb-group-label">Dimensions</div>
+  <a class="sb-link" href="#dim1"><span class="sb-dot" style="background:var(--l3)"></span>Data &amp; Infrastructure</a>
+  <a class="sb-link" href="#dim2"><span class="sb-dot" style="background:var(--l4)"></span>Talent &amp; Skills</a>
+  <a class="sb-link" href="#dim3"><span class="sb-dot" style="background:var(--l1)"></span>Governance &amp; Risk</a>
+  <a class="sb-link" href="#dim4"><span class="sb-dot" style="background:var(--l2)"></span>Adoption &amp; Process</a>
+  <a class="sb-link" href="#dim5"><span class="sb-dot" style="background:var(--l5)"></span>Strategy &amp; Funding</a>
+  <div class="sb-group-label" style="margin-top:8px;">Reference</div>
+  <a class="sb-link" href="#scoring"><span class="sb-dot" style="background:var(--faint)"></span>Scoring &amp; interpretation</a>
+  <a class="sb-tool-link" href="https://km-ai-maturity-assessment.netlify.app" target="_blank">↗ Interactive tool</a>
+</nav>
+
+<main>
+  <header class="page-header">
+    <h1>AI Maturity Model — Full Rubric</h1>
+    <p class="sub">Five dimensions, each scored Level 1–5. Use this rubric alongside the <a href="https://km-ai-maturity-assessment.netlify.app" style="color:var(--acc)">interactive tool</a> to find your <em>binding constraint</em> and the concrete next move to unlock it.</p>
+  </header>
+
+  <!-- Level legend -->
+  <div class="level-legend">
+    <div class="level-cell" data-l="1">
+      <div class="lnum">1</div>
+      <div class="lname">Ad hoc</div>
+      <div class="lsig">Experiments, no strategy, individual heroics</div>
+    </div>
+    <div class="level-cell" data-l="2">
+      <div class="lnum">2</div>
+      <div class="lname">Emerging</div>
+      <div class="lsig">Pilots, isolated wins, no repeatability</div>
+    </div>
+    <div class="level-cell" data-l="3">
+      <div class="lnum">3</div>
+      <div class="lname">Operational</div>
+      <div class="lsig">Repeatable delivery, some governance, measured</div>
+    </div>
+    <div class="level-cell" data-l="4">
+      <div class="lnum">4</div>
+      <div class="lname">Systemic</div>
+      <div class="lsig">Portfolio-managed, governed, funded, scaled</div>
+    </div>
+    <div class="level-cell" data-l="5">
+      <div class="lnum">5</div>
+      <div class="lname">Transformative</div>
+      <div class="lsig">AI-native operating model; durable advantage</div>
+    </div>
+  </div>
+
+  <div class="constraint-note">
+    <strong>Most organizations cluster at Level 2 overall</strong> — and are usually unevenly mature: a Level&#8209;3 data org stuck at Level&#8209;1 governance is completely typical. The average score hides the constraint. The per-dimension profile reveals it.
+  </div>
+
+  <!-- ── Dimension 1 ── -->
+  <section class="dimension" id="dim1">
+    <div class="dim-header">
+      <span class="dim-num">Dimension 1</span>
+      <h2 class="dim-title">Data &amp; Infrastructure</h2>
+    </div>
+    <p class="dim-question">Can we feed and run AI reliably?</p>
+    <table class="rubric">
+      <thead><tr><th></th><th>Descriptor</th><th>Evidence signals</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="lbadge l1">1</span></td>
+          <td class="descriptor">Data siloed, quality unknown; no AI infrastructure</td>
+          <td><div class="signals"><span class="chip">spreadsheets</span><span class="chip">manual exports</span><span class="chip">no pipelines</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l2">2</span></td>
+          <td class="descriptor">Some accessible data; ad hoc cloud or AI tooling</td>
+          <td><div class="signals"><span class="chip">one-off datasets per project</span><span class="chip">no reuse</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l3">3</span></td>
+          <td class="descriptor">Governed data for key domains; repeatable pipelines</td>
+          <td><div class="signals"><span class="chip">data catalog</span><span class="chip">CI for data</span><span class="chip">managed AI platform</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l4">4</span></td>
+          <td class="descriptor">Self-serve data and feature reuse; scalable serving</td>
+          <td><div class="signals"><span class="chip">feature store</span><span class="chip">vector infra</span><span class="chip">observability</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l5">5</span></td>
+          <td class="descriptor">Real-time, high-quality data as a product; elastic infrastructure</td>
+          <td><div class="signals"><span class="chip">data products with SLAs</span><span class="chip">infra is a non-issue</span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Dimension 2 ── -->
+  <section class="dimension" id="dim2">
+    <div class="dim-header">
+      <span class="dim-num">Dimension 2</span>
+      <h2 class="dim-title">Talent &amp; Skills</h2>
+    </div>
+    <p class="dim-question">Do we have the people, and is the org getting smarter?</p>
+    <table class="rubric">
+      <thead><tr><th></th><th>Descriptor</th><th>Evidence signals</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="lbadge l1">1</span></td>
+          <td class="descriptor">No dedicated skills; reliance on individuals</td>
+          <td><div class="signals"><span class="chip">nobody owns AI</span><span class="chip">key-person dependency</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l2">2</span></td>
+          <td class="descriptor">A few practitioners; key-person risk</td>
+          <td><div class="signals"><span class="chip">one data scientist</span><span class="chip">no bench</span><span class="chip">informal knowledge</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l3">3</span></td>
+          <td class="descriptor">A core team and defined roles; some literacy programs</td>
+          <td><div class="signals"><span class="chip">job families exist</span><span class="chip">training started</span><span class="chip">AI roles defined</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l4">4</span></td>
+          <td class="descriptor">Capability embedded in business units; broad literacy</td>
+          <td><div class="signals"><span class="chip">champions in BUs</span><span class="chip">curriculum live</span><span class="chip">leaders literate</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l5">5</span></td>
+          <td class="descriptor">AI fluency is cultural; attracts top talent</td>
+          <td><div class="signals"><span class="chip">hiring magnet</span><span class="chip">AI-literate leadership</span><span class="chip">learning culture</span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Dimension 3 ── -->
+  <section class="dimension" id="dim3">
+    <div class="dim-header">
+      <span class="dim-num">Dimension 3</span>
+      <h2 class="dim-title">Governance &amp; Risk</h2>
+    </div>
+    <p class="dim-question">Can we deploy AI safely and defensibly?</p>
+    <table class="rubric">
+      <thead><tr><th></th><th>Descriptor</th><th>Evidence signals</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="lbadge l1">1</span></td>
+          <td class="descriptor">No policy, no oversight</td>
+          <td><div class="signals"><span class="chip">shadow AI</span><span class="chip">unknown exposure</span><span class="chip">no registry</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l2">2</span></td>
+          <td class="descriptor">Ad hoc reviews; informal rules</td>
+          <td><div class="signals"><span class="chip">case-by-case</span><span class="chip">inconsistent</span><span class="chip">no standards</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l3">3</span></td>
+          <td class="descriptor">Risk-tiered intake; written policy; model documentation</td>
+          <td><div class="signals"><span class="chip">AI registry</span><span class="chip">model cards</span><span class="chip">named owners</span><span class="chip">sign-offs</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l4">4</span></td>
+          <td class="descriptor">Monitored in production; auditable; standards-aligned</td>
+          <td><div class="signals"><span class="chip">evals in CI</span><span class="chip">NIST AI RMF</span><span class="chip">EU AI Act mapping</span><span class="chip">drift alerts</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l5">5</span></td>
+          <td class="descriptor">Governance as enabler; proactive, automated</td>
+          <td><div class="signals"><span class="chip">controls speed delivery</span><span class="chip">automated compliance</span><span class="chip">reference architectures</span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Dimension 4 ── -->
+  <section class="dimension" id="dim4">
+    <div class="dim-header">
+      <span class="dim-num">Dimension 4</span>
+      <h2 class="dim-title">Adoption &amp; Process</h2>
+    </div>
+    <p class="dim-question">Does AI actually change how work gets done?</p>
+    <table class="rubric">
+      <thead><tr><th></th><th>Descriptor</th><th>Evidence signals</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="lbadge l1">1</span></td>
+          <td class="descriptor">Demos, no production use</td>
+          <td><div class="signals"><span class="chip">pilots that never ship</span><span class="chip">POC graveyard</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l2">2</span></td>
+          <td class="descriptor">Isolated production use; low trust</td>
+          <td><div class="signals"><span class="chip">one tool</span><span class="chip">few users</span><span class="chip">workarounds common</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l3">3</span></td>
+          <td class="descriptor">Embedded in several core processes; measured value</td>
+          <td><div class="signals"><span class="chip">KPIs moved</span><span class="chip">users rely on it</span><span class="chip">success metrics tracked</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l4">4</span></td>
+          <td class="descriptor">AI is default in many workflows; change actively managed</td>
+          <td><div class="signals"><span class="chip">processes redesigned</span><span class="chip">change mgmt program</span><span class="chip">broad reliance</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l5">5</span></td>
+          <td class="descriptor">AI-native processes; continuous improvement</td>
+          <td><div class="signals"><span class="chip">the business runs on it</span><span class="chip">continuous feedback loop</span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Dimension 5 ── -->
+  <section class="dimension" id="dim5">
+    <div class="dim-header">
+      <span class="dim-num">Dimension 5</span>
+      <h2 class="dim-title">Strategy &amp; Funding</h2>
+    </div>
+    <p class="dim-question">Is there a managed, funded plan — or a wish?</p>
+    <table class="rubric">
+      <thead><tr><th></th><th>Descriptor</th><th>Evidence signals</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="lbadge l1">1</span></td>
+          <td class="descriptor">No strategy; sporadic spend</td>
+          <td><div class="signals"><span class="chip">reactive</span><span class="chip">hype-driven</span><span class="chip">no ownership</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l2">2</span></td>
+          <td class="descriptor">Stated ambition; project-by-project funding</td>
+          <td><div class="signals"><span class="chip">slideware</span><span class="chip">no portfolio</span><span class="chip">budget case-by-case</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l3">3</span></td>
+          <td class="descriptor">Portfolio with themes and staged funding</td>
+          <td><div class="signals"><span class="chip">scorecard</span><span class="chip">stage gates</span><span class="chip">named sponsor</span><span class="chip">defined themes</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l4">4</span></td>
+          <td class="descriptor">Actively managed portfolio; kills underperformers</td>
+          <td><div class="signals"><span class="chip">quarterly re-prioritization</span><span class="chip">budget reclaimed</span><span class="chip">metrics-gated</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="lbadge l5">5</span></td>
+          <td class="descriptor">AI integral to corporate strategy; durable investment</td>
+          <td><div class="signals"><span class="chip">board-level</span><span class="chip">multi-year commitment</span><span class="chip">AI drives competitive position</span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Scoring ── -->
+  <section id="scoring">
+    <h2>Scoring &amp; interpretation</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body"><strong>Rate each dimension 1–5</strong> using the descriptors and evidence signals above. Use the <a href="https://km-ai-maturity-assessment.netlify.app" style="color:var(--acc)">interactive tool</a> for an instant radar chart, or score manually against this rubric.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body"><strong>Plot the five scores as a radar chart.</strong> The <em>shape</em> matters more than the average — a flat polygon reveals a balanced org; a spiky one reveals where investment has concentrated and where it hasn't.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body"><strong>Find the binding constraint:</strong> the lowest dimension with the highest leverage on outcomes. Governance and Adoption most commonly constrain programs even when Data and Talent look strong — because ungoverned pilots that can't reach production are not value, they are cost.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body"><strong>Define the next level</strong> for the binding constraint: read the descriptor one level up. That is your concrete next investment — not a five-year transformation, a one-level lift on one dimension.</div>
+      </div>
+    </div>
+
+    <div class="rec-rule">
+      <strong>The recommendation rule:</strong> raise your weakest high-leverage dimension by one level. Explicitly stop over-investing in dimensions already ahead of your constraint. Most orgs over-invest in Data &amp; Infrastructure while stuck at Level&nbsp;2 on Governance and Adoption — the two dimensions that actually convert capability into shipped value.
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <a href="https://km-ai-maturity-assessment.netlify.app">↗ Interactive tool</a>
+    <a href="sample-report.md">Worked example — Northwind Financial</a>
+    <a href="https://github.com/kmanning-projects/ai-maturity-assessment">GitHub repo</a>
+    <span>Part of the AI Strategy Portfolio</span>
+  </footer>
+</main>
+
+<script>
+const links = document.querySelectorAll('.sb-link[href^="#"]');
+const targets = Array.from(document.querySelectorAll('section[id], .constraint-note'));
+
+function updateNav() {
+  const y = window.scrollY + 80;
+  let cur = '';
+  for (const t of document.querySelectorAll('section[id]')) {
+    if (t.offsetTop <= y) cur = t.id;
+  }
+  links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + cur));
+}
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+</script>
